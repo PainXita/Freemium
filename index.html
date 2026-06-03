@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mora Obfuscator - 8xms Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0b0b0b;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #d4d4d4;
+        }
+        .container {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(0, 255, 100, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0f0, #0c6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+        .subtitle {
+            color: #777;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        .subtitle a {
+            color: #0f0;
+            text-decoration: none;
+        }
+        .drop-zone {
+            border: 2px dashed #3a3a3a;
+            border-radius: 14px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: #121212;
+            margin-bottom: 18px;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #0f0;
+            background: #1a2a1a;
+            box-shadow: 0 0 24px rgba(0, 255, 0, 0.2);
+        }
+        .drop-zone .icon {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            color: #0f0;
+        }
+        .file-name-display {
+            margin-top: 10px;
+            color: #0f0;
+            font-weight: 600;
+        }
+        #fileInput { display: none; }
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .input-group label {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 11px 14px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: #eee;
+            font-family: monospace;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #0f0;
+        }
+        .btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(145deg, #00c853, #009624);
+            color: #fff;
+            width: 100%;
+            font-size: 1.15rem;
+            padding: 14px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(145deg, #00e676, #00c853);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #1f1f1f;
+            color: #0f0;
+            border: 1px solid #0f0;
+        }
+        .btn-secondary:hover { background: #0f0; color: #000; }
+        .output-section { margin-top: 25px; display: none; }
+        .output-section.active { display: block; }
+        textarea {
+            width: 100%;
+            height: 300px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #b0ffb0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            padding: 16px;
+            resize: vertical;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .action-buttons .btn { flex: 1; }
+        .loading {
+            display: none;
+            width: 32px;
+            height: 32px;
+            border: 3px solid #2a2a2a;
+            border-top-color: #0f0;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 12px auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status { text-align: center; color: #aaa; margin-top: 12px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>⚡ MORA OBFUSCATOR</h1>
+        <div class="subtitle">8xms style · VM-like · <a href="#" target="_blank">Discord</a></div>
+    </div>
+
+    <div class="drop-zone" id="dropZone">
+        <div class="icon">📁</div>
+        <p>Kéo thả file .lua hoặc click để chọn</p>
+        <div class="file-name-display" id="fileName"></div>
+        <input type="file" id="fileInput" accept=".lua,.txt">
+    </div>
+
+    <div class="input-group">
+        <label>📄 Tên file xuất:</label>
+        <input type="text" id="outputName" value="Mora_8xms.lua">
+    </div>
+
+    <button class="btn btn-primary" id="obfBtn">🔒 OBFUSCATE SCRIPT</button>
+    <div class="loading" id="loading"></div>
+
+    <div class="output-section" id="outputSection">
+        <textarea id="outputCode" readonly></textarea>
+        <div class="action-buttons">
+            <button class="btn btn-secondary" id="copyBtn">📋 COPY</button>
+            <button class="btn btn-secondary" id="downloadBtn">💾 TẢI VỀ</button>
+        </div>
+        <div class="status" id="statusMsg"></div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameSpan = document.getElementById('fileName');
+        const outputName = document.getElementById('outputName');
+        const obfBtn = document.getElementById('obfBtn');
+        const loading = document.getElementById('loading');
+        const outputSection = document.getElementById('outputSection');
+        const outputCode = document.getElementById('outputCode');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const statusMsg = document.getElementById('statusMsg');
+
+        let selectedFile = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.lua') && !file.name.endsWith('.txt')) {
+                alert('Chỉ chấp nhận file .lua hoặc .txt');
+                return;
+            }
+            selectedFile = file;
+            fileNameSpan.textContent = '✅ ' + file.name + ' (' + formatBytes(file.size) + ')';
+            if (outputName.value === 'Mora_8xms.lua') {
+                outputName.value = file.name.replace(/\.[^/.]+$/, '') + '_obf.lua';
+            }
+        }
+
+        function formatBytes(b) {
+            if (b < 1024) return b + ' B';
+            return (b / 1024).toFixed(1) + ' KB';
+        }
+
+        function generateJunk(targetLen) {
+            let junk = '';
+            const vars = ['_A','_B','_C','_X','_Y','_Z','_T','_R','_Q','_W'];
+            for (let i = 0; i < 30; i++) {
+                junk += `local ${vars[i%vars.length]}=function(...) return ${Math.floor(Math.random()*999)} end\n`;
+            }
+            junk += `for __=1,10 do local _=bit32 and bit32.bxor(__,__+1) or 0 end\n`;
+            junk += `--[[ ${Math.random().toString(36).repeat(50)} ]]\n`;
+            while (new TextEncoder().encode(junk).length < targetLen) {
+                junk += `-- ${Math.random().toString(36).repeat(20)}\n`;
+            }
+            return junk;
+        }
+
+        async function generateObfuscatedLua(source) {
+            const sourceBytes = new TextEncoder().encode(source);
+            const KEY_LEN = 32;
+            const key = new Uint8Array(KEY_LEN);
+            crypto.getRandomValues(key);
+
+            // XOR encrypt
+            const encData = new Uint8Array(sourceBytes.length);
+            for (let i = 0; i < sourceBytes.length; i++) {
+                encData[i] = sourceBytes[i] ^ key[i % KEY_LEN];
+            }
+
+            // key as Lua table
+            const keyTable = ' {' + Array.from(key).join(',') + '}';
+            // data as Lua table
+            let dataStr = '';
+            for (let i = 0; i < encData.length; i++) {
+                if (i % 180 === 0) dataStr += '\n';
+                dataStr += encData[i] + ',';
+            }
+            const dataTable = '{' + dataStr + '}';
+
+            const rK = '_K' + Math.random().toString(36).substring(2, 8);
+            const rD = '_D' + Math.random().toString(36).substring(2, 8);
+            const rX = '_X' + Math.random().toString(36).substring(2, 8);
+            const rF = '_F' + Math.random().toString(36).substring(2, 8);
+            const rL = '_L' + Math.random().toString(36).substring(2, 8);
+
+            const loader = `--[[ Mora Obfuscator - 8xms style ]]\nreturn(function(...)local d,K do
+local h=math.floor
+local i=string.char
+local S=string.byte
+local function a(d,K)local i=0 for S=1,8 do if(d%2~=K%2)then i=i+2^(S-1)end d=math.floor(d/2)K=math.floor(K/2)end return i end
+local n={0x5A,0x3F,0x1C,0x8D}
+local x=string.sub
+local function T(h)local d={}for K=1,#h,1 do local i=x(h,K,K)local S=tonumber(i,16)d[#d+1]=S end return d end
+local J=([=[
+${data}
+]=])
+local I=T(string.sub(J,5,-5))
+local Q={}
+K=setmetatable({},{__index=Q,__metatable=nil})
+function d(h)local K=Q if not K[h]then local d=h+1 local S=((a(I[d],n[1])+a(I[d+1],n[2])*256)+a(I[d+2],n[3])*65536)+a(I[d+3],n[4])*16777216 d=d+4 local x={} for h=1,S,1 do local K=(h-1)%#n+1 x[h]=i(a(I[(d+h-1)],n[K])) end K[h]=table.concat(x) end return h end
+end
+local ${rK}=${key}
+local ${rD}=${dataTable}
+local ${rX}=${rX}
+local ${rF}={}
+for ${rL}=1,#${rK} do ${rF}[${rL}]=${rK}[${rL}] end
+local ${rL}=table.concat(${rF})
+local ${rF},_=loadstring(${rL})
+if ${rF} then ${rF}() else error(_) end
+end)(...)`;
+
+            // Build hex data for J
+            let hexData = '';
+            for (let i = 0; i < encData.length; i++) {
+                hexData += encData[i].toString(16).padStart(2,'0').toUpperCase();
+                if ((i+1) % 32 === 0) hexData += '\n';
+            }
+            const finalLoader = loader.replace('${data}', hexData)
+                                     .replace('${key}', keyTable)
+                                     .replace('${dataTable}', dataTable)
+                                     .replace(/\$\{rK\}/g, rK)
+                                     .replace(/\$\{rD\}/g, rD)
+                                     .replace(/\$\{rX\}/g, rX)
+                                     .replace(/\$\{rF\}/g, rF)
+                                     .replace(/\$\{rL\}/g, rL);
+
+            // Add junk code to reach ~100KB
+            let finalCode = finalLoader;
+            let currentSize = new TextEncoder().encode(finalCode).length;
+            if (currentSize < 90 * 1024) {
+                const junk = generateJunk(40 * 1024);
+                finalCode = junk + '\n' + finalCode;
+            }
+            return finalCode;
+        }
+
+        obfBtn.addEventListener('click', async () => {
+            if (!selectedFile) {
+                alert('Vui lòng chọn file Lua!');
+                return;
+            }
+            loading.style.display = 'block';
+            obfBtn.disabled = true;
+            outputSection.classList.remove('active');
+            statusMsg.textContent = '';
+
+            try {
+                const source = await selectedFile.text();
+                const obfuscated = await generateObfuscatedLua(source);
+                outputCode.value = obfuscated;
+                outputSection.classList.add('active');
+                statusMsg.textContent = '✅ Obfuscation thành công! Kích thước: ' + formatBytes(new TextEncoder().encode(obfuscated).length);
+            } catch (err) {
+                alert('Lỗi: ' + err.message);
+            } finally {
+                loading.style.display = 'none';
+                obfBtn.disabled = false;
+            }
+        });
+
+        copyBtn.addEventListener('click', () => {
+            outputCode.select();
+            document.execCommand('copy');
+            statusMsg.textContent = '📋 Đã sao chép vào clipboard!';
+            setTimeout(() => { if (statusMsg.textContent.includes('sao chép')) statusMsg.textContent = ''; }, 2000);
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const blob = new Blob([outputCode.value], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = outputName.value.trim() || 'Mora_obf.lua';
+            a.click();
+            URL.revokeObjectURL(url);
+            statusMsg.textContent = '💾 Đã tải xuống!';
+        });
+    })();
+</script>
+</body>
+</html>
