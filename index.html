@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Obfuscator Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        textarea { width: 100%; height: 200px; margin-bottom: 10px; }
+        button { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Script Obfuscator</h1>
+    <label for="inputCode">Enter Your Code:</label>
+    <textarea id="inputCode" placeholder="Paste your script code here..."></textarea>
+    <input type="file" id="fileInput" />
+    <button onclick="handleFileUpload()">Upload File</button>
+    <h2>Obfuscated Code:</h2>
+    <textarea id="outputCode" readonly></textarea>
+    <button onclick="obfuscateCode()">Obfuscate Script</button>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+    <button onclick="downloadFile()">Download File</button>
+    <script>
+        function obfuscateCode() {
+            let input = document.getElementById('inputCode').value;
+            // Simple Obfuscation Example
+            let obfuscated = 'return local = L("' + btoa(input) + '") end...(...); end';
+            document.getElementById('outputCode').value = obfuscated;
+        }
+        function handleFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('inputCode').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        }
+        function copyToClipboard() {
+            const outputTextArea = document.getElementById('outputCode');
+            outputTextArea.select();
+            document.execCommand('copy');
+            alert('Code copied to clipboard!');
+        }
+        function downloadFile() {
+            const blob = new Blob([document.getElementById('outputCode').value], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'MoraSkibididomdomyesyes.lua.txt';
+            link.click();
+        }
+    </script>
+</body>
+</html>
