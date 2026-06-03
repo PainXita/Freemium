@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mora Obfuscator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0d0d0d;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        .container {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            transition: all 0.3s ease;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0f0, #0f8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(0,255,0,0.4);
+            letter-spacing: 2px;
+        }
+        .header .subtitle {
+            font-size: 0.9rem;
+            color: #888;
+            margin-top: 5px;
+        }
+        .subtitle a {
+            color: #0f0;
+            text-decoration: none;
+        }
+        .drop-zone {
+            border: 2px dashed #444;
+            border-radius: 12px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #111;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #0f0;
+            background: #1a2a1a;
+            box-shadow: 0 0 20px rgba(0,255,0,0.2);
+        }
+        .drop-zone p {
+            color: #aaa;
+            font-size: 0.95rem;
+        }
+        .drop-zone .icon {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            color: #0f0;
+        }
+        #fileInput {
+            display: none;
+        }
+        .file-name-display {
+            margin-top: 8px;
+            color: #0f0;
+            font-weight: 600;
+            word-break: break-all;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .input-group label {
+            font-weight: 600;
+            color: #ccc;
+            white-space: nowrap;
+        }
+        .input-group input {
+            flex: 1;
+            min-width: 180px;
+            padding: 10px 14px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            transition: 0.2s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #0f0;
+            box-shadow: 0 0 10px rgba(0,255,0,0.3);
+        }
+        .btn {
+            padding: 11px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+        .btn-primary {
+            background: linear-gradient(145deg, #00c853, #009624);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,200,0,0.4);
+            width: 100%;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(145deg, #00e676, #00c853);
+            box-shadow: 0 6px 16px rgba(0,255,0,0.5);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+        .btn-secondary {
+            background: #222;
+            color: #0f0;
+            border: 1px solid #0f0;
+        }
+        .btn-secondary:hover {
+            background: #0f0;
+            color: #000;
+        }
+        .output-section {
+            margin-top: 25px;
+            display: none;
+        }
+        .output-section.active {
+            display: block;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: #b0ffb0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            padding: 14px;
+            resize: vertical;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #0f0;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .action-buttons .btn {
+            flex: 1;
+            justify-content: center;
+        }
+        .loading-spinner {
+            display: none;
+            width: 28px;
+            height: 28px;
+            border: 3px solid #333;
+            border-top-color: #0f0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .status-message {
+            text-align: center;
+            color: #aaa;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MORA OBFUSCATOR</h1>
+            <div class="subtitle">
+                Lua 5.1 Obfuscation • <a href="https://discord.gg/gqsn7nUcft" target="_blank">Discord</a>
+            </div>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="icon">📁</div>
+            <p>Kéo thả file .lua vào đây hoặc click để chọn</p>
+            <div class="file-name-display" id="fileNameDisplay"></div>
+            <input type="file" id="fileInput" accept=".lua,.txt">
+        </div>
+
+        <div class="input-group">
+            <label>Tên file xuất:</label>
+            <input type="text" id="outputName" value="Mora.lua" placeholder="Mora.lua">
+        </div>
+
+        <button class="btn btn-primary" id="obfBtn">
+            ⚡ Obf Script
+        </button>
+        <div class="loading-spinner" id="loadingSpinner"></div>
+
+        <div class="output-section" id="outputSection">
+            <textarea id="outputCode" readonly placeholder="Script đã mã hóa sẽ hiển thị ở đây..."></textarea>
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="copyBtn">📋 Copy</button>
+                <button class="btn btn-secondary" id="downloadBtn">💾 Tải về</button>
+            </div>
+            <div class="status-message" id="statusMsg"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const outputName = document.getElementById('outputName');
+            const obfBtn = document.getElementById('obfBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const outputSection = document.getElementById('outputSection');
+            const outputCode = document.getElementById('outputCode');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const statusMsg = document.getElementById('statusMsg');
+
+            let selectedFile = null;
+
+            // Xử lý kéo thả và chọn file
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+
+            function handleFile(file) {
+                if (!file.name.endsWith('.lua') && !file.name.endsWith('.txt')) {
+                    alert('Vui lòng chọn file .lua hoặc .txt');
+                    return;
+                }
+                selectedFile = file;
+                fileNameDisplay.textContent = '✅ ' + file.name + ' (' + formatBytes(file.size) + ')';
+                // Tự động cập nhật tên file xuất nếu chưa thay đổi
+                if (outputName.value === 'Mora.lua' || outputName.value === '') {
+                    const baseName = file.name.replace(/\.[^/.]+$/, "");
+                    outputName.value = baseName + '_obf.lua';
+                }
+            }
+
+            function formatBytes(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+
+            // Nút Obf Script
+            obfBtn.addEventListener('click', async () => {
+                if (!selectedFile) {
+                    alert('Vui lòng chọn file Lua trước!');
+                    return;
+                }
+                const outName = outputName.value.trim();
+                if (!outName) {
+                    alert('Vui lòng nhập tên file xuất!');
+                    return;
+                }
+
+                // Hiện loading
+                loadingSpinner.style.display = 'block';
+                obfBtn.disabled = true;
+                outputSection.classList.remove('active');
+                statusMsg.textContent = '';
+
+                try {
+                    const obfuscated = await obfuscateLua(selectedFile, outName);
+                    outputCode.value = obfuscated;
+                    outputSection.classList.add('active');
+                    statusMsg.textContent = '✅ Obfuscation hoàn tất! Kích thước: ' + formatBytes(new TextEncoder().encode(obfuscated).length);
+                } catch (err) {
+                    alert('Lỗi: ' + err.message);
+                } finally {
+                    loadingSpinner.style.display = 'none';
+                    obfBtn.disabled = false;
+                }
+            });
+
+            // Hàm obfuscate chính
+            async function obfuscateLua(file, outName) {
+                const arrayBuffer = await file.arrayBuffer();
+                const sourceBytes = new Uint8Array(arrayBuffer);
+                if (sourceBytes.length === 0) throw new Error('File rỗng!');
+
+                // Tạo key ngẫu nhiên 32 byte
+                const keyLength = 32;
+                const key = new Uint8Array(keyLength);
+                crypto.getRandomValues(key);
+
+                // Mã hóa dữ liệu bằng XOR với key
+                const encodedData = new Uint8Array(sourceBytes.length);
+                for (let i = 0; i < sourceBytes.length; i++) {
+                    encodedData[i] = sourceBytes[i] ^ key[i % keyLength];
+                }
+
+                // Mã hóa key bằng XOR 0xAA
+                const keyEncoded = Array.from(key).map(b => b ^ 0xAA);
+
+                // Tạo script Lua
+                let lua = `--[[ This file was by Mora [https://discord.gg/gqsn7nUcft] ]]\n\n`;
+
+                // Anti-debug cơ bản
+                lua += `if debug and debug.getinfo then while true do end end\n`;
+
+                // Key đã mã hóa
+                lua += `local _KE={${keyEncoded.join(',')}}\n`;
+
+                // Dữ liệu đã mã hóa (chia dòng để dễ đọc, nhưng không quá dài)
+                lua += `local _DE={`;
+                for (let i = 0; i < encodedData.length; i++) {
+                    if (i % 100 === 0) lua += '\n';
+                    lua += encodedData[i] + ',';
+                }
+                lua += `}\n`;
+
+                // Loader
+                lua += `
+local function _GK()
+  local k={}
+  for i=1,#_KE do k[i]=bit32.bxor(_KE[i],0xAA) end
+  return k
+end
+local function _DC(d,k)
+  local o={}
+  local kl=#k
+  for i=1,#d do o[i]=string.char(bit32.bxor(d[i],k[(i-1)%kl+1])) end
+  return table.concat(o)
+end
+local _K=_GK()
+local _S=_DC(_DE,_K)
+local _F,_E=loadstring(_S)
+if _F then _F() else error(_E) end
+`;
+
+                // Tính kích thước hiện tại
+                let currentSize = new TextEncoder().encode(lua).length;
+                const targetMin = 100 * 1024;  // 100KB
+                const targetMax = 130 * 1024;  // 130KB
+
+                if (currentSize < targetMin) {
+                    const needBytes = targetMin - currentSize + 5 * 1024; // dư 5KB để chắc chắn
+                    const comment = generateRandomComment(needBytes);
+                    lua += `\n--[[${comment}]]\n`;
+                    currentSize = new TextEncoder().encode(lua).length;
+                    // Nếu vượt quá 130KB, cắt bớt
+                    if (currentSize > targetMax) {
+                        const excess = currentSize - targetMax;
+                        const newCommentSize = Math.max(0, needBytes - excess);
+                        const trimmedComment = generateRandomComment(newCommentSize);
+                        // Thay thế comment cuối
+                        lua = lua.substring(0, lua.lastIndexOf('--[[')) + `--[[${trimmedComment}]]\n`;
+                        currentSize = new TextEncoder().encode(lua).length;
+                    }
+                } else if (currentSize < targetMin) {
+                    // Nếu vẫn nhỏ hơn (trường hợp hiếm), thêm ít
+                    lua += `\n--[[${generateRandomComment(targetMin - currentSize + 1024)}]]\n`;
+                }
+
+                return lua;
+            }
+
+            function generateRandomComment(targetBytes) {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 !@#$%^&*()_+-={}|;:,.<>/?';
+                let result = '';
+                let currentBytes = 0;
+                const encoder = new TextEncoder();
+                while (currentBytes < targetBytes) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    const charBytes = encoder.encode(char).length;
+                    if (currentBytes + charBytes <= targetBytes) {
+                        result += char;
+                        currentBytes += charBytes;
+                    } else {
+                        // Thêm dấu cách (1 byte) cho vừa đủ
+                        if (currentBytes < targetBytes) {
+                            result += ' ';
+                            currentBytes++;
+                        } else break;
+                    }
+                }
+                // Loại bỏ mọi ký tự ']' để không phá vỡ comment
+                result = result.replace(/\]/g, ' ');
+                return result;
+            }
+
+            // Copy
+            copyBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(outputCode.value);
+                    statusMsg.textContent = '📋 Đã sao chép vào clipboard!';
+                    setTimeout(() => { if (statusMsg.textContent === '📋 Đã sao chép vào clipboard!') statusMsg.textContent = ''; }, 2500);
+                } catch (err) {
+                    // Fallback
+                    outputCode.select();
+                    document.execCommand('copy');
+                    statusMsg.textContent = '📋 Đã sao chép (fallback)!';
+                }
+            });
+
+            // Tải về
+            downloadBtn.addEventListener('click', () => {
+                const content = outputCode.value;
+                const fileName = outputName.value.trim() || 'Mora_obf.lua';
+                const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                statusMsg.textContent = '💾 Đã tải xuống ' + fileName;
+            });
+        })();
+    </script>
+</body>
+</html>
