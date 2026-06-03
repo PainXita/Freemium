@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mora Obf by _@hmso53Dz</title>
+    <style>
+        :root {
+            --container-bg: rgba(31, 40, 51, 0.85); /* Tăng độ trong suốt để nhìn thấy ảnh nền */
+            --primary-color: #66fcf1;
+            --secondary-color: #45f3ff;
+            --text-color: #c5c6c7;
+            --btn-danger: #ff4a4a;
+            --btn-deobf: #a275ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Cài đặt ảnh nền full giao diện */
+            background-image: url('https://raw.githubusercontent.com/PainXita/Gif/refs/heads/main/meme-troll-3.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Nút Ba Gạch Menu */
+        .menu-burger {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(31, 40, 51, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(102, 252, 241, 0.4);
+            box-shadow: 0 0 10px rgba(102, 252, 241, 0.2);
+        }
+
+        .menu-burger div {
+            width: 30px;
+            height: 3px;
+            background-color: var(--primary-color);
+            transition: 0.3s;
+        }
+
+        /* Menu Side-Tab */
+        .nav-menu {
+            position: absolute;
+            top: 80px;
+            left: -260px;
+            width: 210px;
+            background: rgba(31, 40, 51, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .nav-menu.active {
+            left: 20px;
+        }
+
+        .menu-item {
+            padding: 14px;
+            background: #0f1319;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            color: var(--text-color);
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: #000;
+            background: var(--primary-color);
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 12px rgba(102, 252, 241, 0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 950px;
+            background: var(--container-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px); /* Làm mờ nhẹ phần ảnh nền phía sau khung nội dung để dễ đọc chữ */
+            margin-top: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-size: 26px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            background-color: rgba(15, 19, 25, 0.9);
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #00ffcc;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 8px rgba(69, 243, 255, 0.3);
+        }
+
+        .file-upload-wrapper {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 8px 16px;
+            cursor: pointer;
+            background-color: #2c3e50;
+            border: 1px solid #34495e;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-obf {
+            background-color: var(--primary-color);
+            color: #000;
+            flex: 2;
+        }
+
+        .btn-obf:hover {
+            background-color: #45e0d7;
+        }
+
+        .btn-deobf-run {
+            background-color: var(--btn-deobf);
+            color: #fff;
+            flex: 2;
+        }
+
+        .btn-deobf-run:hover {
+            background-color: #b38aff;
+            box-shadow: 0 0 15px rgba(162, 117, 255, 0.4);
+        }
+
+        .btn-clear {
+            background-color: var(--btn-danger);
+            color: #fff;
+        }
+
+        .btn-action {
+            background-color: #2d3748;
+            color: #fff;
+            border: 1px solid #4a5568;
+        }
+
+        .output-box {
+            background-color: rgba(15, 19, 25, 0.9);
+            border: 1px solid #334155;
+            color: #ffcc00;
+        }
+    </style>
+</head>
+<body>
+
+<div class="menu-burger" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+</div>
+
+<div class="nav-menu" id="navMenu">
+    <div class="menu-item active" id="menuObf" onclick="switchTab('obf')">Obf</div>
+    <div class="menu-item" id="menuDeobf" onclick="switchTab('deobf')">Deobf</div>
+</div>
+
+<div class="container">
+    <h1 id="mainTitle">Mora Obf by _@hmso53Dz</h1>
+    
+    <div class="section">
+        <label id="lblInput" for="inputScript">Nhập Script Lua gốc của bạn:</label>
+        <textarea id="inputScript" placeholder="Dán mã nguồn vào đây..."></textarea>
+        
+        <div class="file-upload-wrapper">
+            <label class="custom-file-upload">
+                <input type="file" id="fileInput" accept=".lua,.txt">
+                Tải file từ máy
+            </label>
+            <span id="fileNameDisplay" style="font-size: 14px; color: #aaa;"></span>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-obf" id="btnMainProcess" onclick="processLogic()">Obf</button>
+        <button class="btn-clear" onclick="clearAllCode()">Clear</button>
+    </div>
+
+    <div class="section">
+        <label id="lblOutput" for="outputScript">Kết quả xử lý:</label>
+        <textarea id="outputScript" class="output-box" readonly placeholder="Kết quả xử lý sẽ xuất hiện ở đây..."></textarea>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-action" onclick="copyToClipboard()">Copy</button>
+        <button class="btn-action" onclick="downloadFile()">Download</button>
+    </div>
+</div>
+
+<script>
+    let currentMode = "obf";
+
+    function toggleMenu() {
+        document.getElementById('navMenu').classList.toggle('active');
+    }
+
+    function switchTab(mode) {
+        currentMode = mode;
+        toggleMenu();
+        
+        const menuObf = document.getElementById('menuObf');
+        const menuDeobf = document.getElementById('menuDeobf');
+        const btnMainProcess = document.getElementById('btnMainProcess');
+        const lblInput = document.getElementById('lblInput');
+        const lblOutput = document.getElementById('lblOutput');
+
+        menuObf.classList.remove('active');
+        menuDeobf.classList.remove('active');
+
+        if (mode === 'obf') {
+            menuObf.classList.add('active');
+            lblInput.innerText = "Nhập Script Lua gốc của bạn:";
+            lblOutput.innerText = "Kết quả xử lý:";
+            btnMainProcess.innerText = "Obf";
+            btnMainProcess.className = "btn-obf";
+        } else {
+            menuDeobf.classList.add('active');
+            lblInput.innerText = "Dán đoạn mã Obfuscated chứa mảng hằng số cần Dump:";
+            lblOutput.innerText = "Mã nguồn gốc khôi phục hoàn toàn từ mảng (Source Code):";
+            btnMainProcess.innerText = "Deobf";
+            btnMainProcess.className = "btn-deobf-run";
+        }
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        document.getElementById('fileNameDisplay').innerText = file.name;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            document.getElementById('inputScript').value = evt.target.result;
+        };
+        reader.readAsText(file);
+    });
+
+    function clearAllCode() {
+        document.getElementById('inputScript').value = "";
+        document.getElementById('outputScript').value = "";
+        document.getElementById('fileInput').value = "";
+        document.getElementById('fileNameDisplay').innerText = "";
+        alert('Đã xóa sạch bộ nhớ tạm!');
+    }
+
+    function toPrometheusArray(str) {
+        let pool = [];
+        for (let i = 0; i < str.length; i++) {
+            let charCode = str.charCodeAt(i);
+            if (i % 2 === 0) {
+                pool.push(`"R#_${charCode}_tq"`);
+            } else {
+                pool.push(`"cI/${charCode}== "`);
+            }
+        }
+        return pool.join(";");
+    }
+
+    function processLogic() {
+        const sourceCode = document.getElementById('inputScript').value.trim();
+        if (!sourceCode) {
+            alert('Vui lòng nhập mã nguồn!');
+            return;
+        }
+
+        if (currentMode === "obf") {
+            const stringPoolData = toPrometheusArray(sourceCode);
+            const obfuscatedResult = `--[[
+    Mora Obf by _@hmso53Dz
+]]
+return(function(...)
+    local w = { ${stringPoolData} };
+    local a = {};
+    for E = 1, #w do
+        local U = w[E];
+        local numStr = U:match("%d+");
+        if numStr then
+            a[E] = string.char(tonumber(numStr));
+        end
+    end
+    local Z = loadstring or load;
+    Z(table.concat(a))();
+end)(...)`;
+            document.getElementById('outputScript').value = obfuscatedResult;
+        } else {
+            try {
+                const poolRegex = /local\s+w\s*=\s*\{([\s\S]*?)\}/;
+                const match = sourceCode.match(poolRegex);
+
+                if (match) {
+                    const items = match[1].split(/[;,]/);
+                    let decryptedSource = "";
+
+                    for (let i = 0; i < items.length; i++) {
+                        const numMatch = items[i].match(/\d+/);
+                        if (numMatch) {
+                            const charCode = parseInt(numMatch[0], 10);
+                            if (!isNaN(charCode)) {
+                                decryptedSource += String.fromCharCode(charCode);
+                            }
+                        }
+                    }
+
+                    if (decryptedSource.length > 0) {
+                        document.getElementById('outputScript').value = decryptedSource;
+                    } else {
+                        alert("Không thể giải mã ký tự từ mảng dữ liệu. Vui lòng kiểm tra lại định dạng!");
+                    }
+                } else {
+                    alert("Không tìm thấy cấu trúc bảng hằng số 'local w = {...}' hợp lệ trong đoạn mã!");
+                }
+            } catch (err) {
+                alert("Lỗi trong quá trình xử lý: " + err.message);
+            }
+        }
+    }
+
+    function copyToClipboard() {
+        const output = document.getElementById('outputScript');
+        if (!output.value) return alert('Chưa có dữ liệu!');
+        output.select();
+        document.execCommand('copy');
+        alert('Đã copy!');
+    }
+
+    function downloadFile() {
+        const outputText = document.getElementById('outputScript').value;
+        if (!outputText) return alert('Hãy xử lý trước khi tải file!');
+        const randomNumber = Math.floor(Math.random() * 10) + 1;
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob([outputText], { type: "text/plain;charset=utf-8" }));
+        link.download = `MoraLuLa${randomNumber}.txt.lua`;
+        link.click();
+    }
+</script>
+</body>
+</html>
